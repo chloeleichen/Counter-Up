@@ -1,7 +1,7 @@
-Counter-Up
+Drupal Counter-Up
 ==========
 
-Counter-Up is a jQuery plugin that *animates* a number from zero (counting up towards it). It supports counting up:
+Drupal Counter-Up is a Drupal module that utilize a  a jQuery plugin that *animates* a number from zero (counting up towards it). It supports counting up:
 
 * integers `12345`
 * floats `0.1234`
@@ -61,6 +61,9 @@ $('.counter').counterUp({
 Social Stuff
 ============
 
+The original jQuery plugin was by the following awsome guys: 
+
 Twitter: [@bfintal](https://twitter.com/bfintal) & [@gambitph](https://twitter.com/gambitph)
 
 Google+: <a href='https://plus.google.com/113101541449927918834' rel='author'>+Benjamin Intal</a>
+
