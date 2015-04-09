@@ -1,0 +1,141 @@
+<?php 
+// $Ids
+/**
+* @file 
+* Counter up Module file 
+*
+* This module create a counter for every number wrapper in "counter" class
+*/
+/** Implemment hook_help().
+*/
+ 
+ function counter_up_help($path, $arg){
+ 	if($path == 'admin/help#counter_up'){
+ 		return t("This module create a counter for every number wrapper in 'counter' class.");
+ 	}
+ }
+
+
+ /**
+ * Implements hook_libraries_info().
+ *
+ * We prepare the library first.
+ */
+function counter_up_libraries_info() {
+  // Expected to be extracted into 'sites/all/libraries/scrollit'.
+  $libraries['counterup'] = array(
+    'name' => 'counterup',
+    'vendor url' => 'https://github.com/bfintal/Counter-Up',
+    'download url' => 'https://raw.githubusercontent.com/bfintal/Counter-Up/master/jquery.counterup.js',
+    'version callback' => 'counter_up_version_callback',
+    'files' => array(
+      // This can be a path to the file location like array('lib/simple.js').
+      'js' => array('jquery.counterup.js'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements version_callback.
+ *
+ * We don't need to check for version, so returning TRUE every time.
+ */
+function counter_up_version_callback() {
+  return TRUE;
+}
+
+
+/**
+ * Implements hook_permissions().
+ */
+function counter_up_permission() {
+  return array(
+    'access conter up configuration' => array(
+      'title' => t('Administer conter up configuration'),
+      'description' => t('Allow users to change conter up configuration configuration'),
+    ),
+  );
+}
+
+ /** 
+ * Implement hook_menu 
+ */
+
+ function counter_up_menu(){
+ 	$items = array();
+ 	$items['admin/config/user-interface/counter-up'] = array(
+ 		'title' => 'Counter Up',
+	    'description' => 'Settings for counter-up counter',
+	    'page callback' => 'drupal_get_form',
+	    'page arguments' => array('counter_up_form'),
+	    'access arguments' => array('access counter up configuration'),
+	    'type' => MENU_NORMAL_ITEM,
+ 		);
+ 	return $items;
+
+ }
+
+ function counter_up_form($form, &$form_state){
+ 	//text field for the config
+ 	$form['counter_up_time'] = array(
+ 		'#type' => 'textfield',
+ 		'#title' => t('Time'),
+ 		'#default_value' => variable_get('counter_up_time', '1000'),
+ 		'#description' => t('The total duration of the count up animation'),
+ 		'#required' => FALSE,
+ 		);
+
+ 	$form['counter_up_delay'] = array(
+ 		'#type' => 'textfield',
+ 		'#title' => t('Delay'),
+ 		'#default_value' => variable_get('counter_up_delay', '10'),
+ 		'#description' => t('The delay in milliseconds per number count up'),
+ 		'#required' => FALSE,
+ 		);
+
+ 	return system_settings_form($form);
+ }
+
+ /**
+ * Implements hook_validate().
+ */
+function counter_up_form_validate($form, &$form_state) {
+  dpm($form_state['values']['counter_up_time']);
+  if (($form_state['values']['counter_up_time'] == '')) {
+    $form_state['values']['counter_up_time'] = 1000;
+
+
+  }
+  if (($form_state['values']['counter_up_delay'] == '')) {
+    $form_state['values']['counter_up_delay'] = 10;
+  }
+
+  if (!is_numeric($form_state['values']['counter_up_time'])) {
+
+    form_set_error('counter_up_time', t('Counter-up duration must be a number'));
+  }
+  if (!is_numeric($form_state['values']['counter_up_delay'])) {
+    form_set_error('counter_up_delay', t('Counter-up delay must be a number'));
+  }
+}
+/**
+* Implements hook_preprocess_HOOK().
+*/
+
+function counter_up_preprocess_page(&$variables){
+  //Manually load this library because counter-up depends on a certain version of this lib
+  drupal_add_js(drupal_get_path('module', 'counter_up') . '/waypoints.min.js');
+  libraries_load('counterup');
+  
+  $js_settings = array(
+
+      'time' => (int) variable_get('counter_up_time', '1000'),
+      'delay' => (int) variable_get('counter_up_delay', '10'),
+
+    );
+  drupal_add_js(array('counter_up' => $js_settings), 'setting');
+  drupal_add_js(drupal_get_path('module', 'counter_up') . '/counter_up.js');
+  
+}

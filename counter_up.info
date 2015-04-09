@@ -1,0 +1,10 @@
+name = Counter Up
+description = Provides automatica Counter .
+core = 7.x
+version = 7.x-1.x
+
+files[] = conyer_up.module
+dependencies[] = field
+dependencies[] = libraries
+
+
